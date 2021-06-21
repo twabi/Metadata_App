@@ -15,8 +15,6 @@ const Navigation = () => {
         <Fragment>
             <Switch>
 
-                <Route path="/" render={(props) => (
-                    <Home {...props} />)} exact />
                 <Route path="/home" render={(props) => (
                     <Home {...props} />)} exact />
                 <Route path="/interventions" render={(props) => (
