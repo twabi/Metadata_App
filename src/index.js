@@ -25,7 +25,7 @@ const appConfig = {
     }
 }
 
-const developmentServer = "https://covmw.com/namistest/api/";
+const developmentServer = "https://covmw.com/namistest/api";
 const withBaseUrl = (baseUrl) => {
     init({
         baseUrl: baseUrl,
