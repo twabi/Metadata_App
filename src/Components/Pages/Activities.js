@@ -253,8 +253,8 @@ const Activities = (props) => {
                         <Input placeholder="Enter Activity form name" id="formName"/>
                     </Form.Item>
 
-                    <Form.Item label="Intervention">
-                        <Select placeholder="Select Intervention to Add to"
+                    <Form.Item label="Sub-Component">
+                        <Select placeholder="Select Sub-Component to Add to"
                                 showSearch
                                 optionFilterProp="children"
                                 filterOption={(input, option) =>

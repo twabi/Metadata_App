@@ -3,7 +3,7 @@ import HeaderNav from "../NavPages/HeaderNav";
 import NavBar from "../NavPages/NavBar";
 import {
     MDBCard, MDBCardBody, MDBCardTitle, MDBCardText, MDBCardHeader, MDBBtn, MDBNav, MDBNavItem, MDBNavLink,
-    MDBContainer, MDBCardFooter, MDBCardGroup
+    MDBContainer, MDBCardFooter, MDBCardGroup, MDBBox
 } from "mdbreact";
 import {Button} from "evergreen-ui";
 import {useHistory} from "react-router-dom";
@@ -17,7 +17,7 @@ const Home = () => {
             <div className="mb-5">
                 <HeaderNav />
             </div>
-            <MDBContainer className="py-4">
+            <MDBBox className="py-4 px-5 mx-5" >
 
                     <MDBCard>
                         <MDBCardHeader>
@@ -108,7 +108,7 @@ const Home = () => {
                             </MDBCardGroup>
                         </MDBCardBody>
                     </MDBCard>
-            </MDBContainer>
+            </MDBBox>
 
         </div>
     )

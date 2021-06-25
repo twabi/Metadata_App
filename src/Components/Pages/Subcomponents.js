@@ -253,8 +253,8 @@ const SubComponents = (props) => {
                         <Input placeholder="Enter SubComponent form name" id="formName"/>
                     </Form.Item>
 
-                    <Form.Item label="Intervention">
-                        <Select placeholder="Select Intervention to Add to"
+                    <Form.Item label="Component">
+                        <Select placeholder="Select Component to Add to"
                                 showSearch
                                 optionFilterProp="children"
                                 filterOption={(input, option) =>
