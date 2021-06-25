@@ -29,9 +29,7 @@ const Home = () => {
                                     <MDBCardBody>
                                         <MDBCardTitle tag="h5">Interventions</MDBCardTitle>
                                         <MDBCardText>
-                                            This is a wider panel with supporting text below as a natural
-                                            lead-in to additional content. This content is a little bit
-                                            longer.
+                                            Add and Delete Interventions in the Option Sets of the DHIS2 Platform
                                         </MDBCardText>
                                     </MDBCardBody>
                                     <MDBCardFooter small muted>
@@ -48,8 +46,7 @@ const Home = () => {
                                     <MDBCardBody>
                                         <MDBCardTitle tag="h5">Components</MDBCardTitle>
                                         <MDBCardText>
-                                            This panel has supporting text below as a natural lead-in to
-                                            additional content.
+                                            Add or Delete Components of the DHIS2 Option Sets
                                         </MDBCardText>
                                     </MDBCardBody>
                                     <MDBCardFooter small muted>
@@ -69,9 +66,7 @@ const Home = () => {
                                     <MDBCardBody>
                                         <MDBCardTitle tag="h5">Subcomponents</MDBCardTitle>
                                         <MDBCardText>
-                                            This is a wider panel with supporting text below as a natural
-                                            lead-in to additional content. This content is a little bit
-                                            longer.
+                                            Add or Delete Subcomponents of the DHIS2 Option Sets
                                         </MDBCardText>
                                     </MDBCardBody>
                                     <MDBCardFooter small muted>
@@ -89,8 +84,7 @@ const Home = () => {
                                     <MDBCardBody>
                                         <MDBCardTitle tag="h5">Activities</MDBCardTitle>
                                         <MDBCardText>
-                                            This panel has supporting text below as a natural lead-in to
-                                            additional content.
+                                            Add or Delete Activities of the DHIS2 Option Sets
                                         </MDBCardText>
                                     </MDBCardBody>
                                     <MDBCardFooter small muted>
