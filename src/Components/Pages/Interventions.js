@@ -105,7 +105,7 @@ const Interventions = (props) => {
                 action: <div>
                     <Button intent="danger" onClick={() => {
                         // eslint-disable-next-line no-restricted-globals
-                        if (confirm("Are you sure you want to delete Interaction?")) {
+                        if (confirm("Are you sure you want to delete Intervention?")) {
                             handleDelete(item.id)
                         }
 

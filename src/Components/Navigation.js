@@ -85,13 +85,19 @@ const Navigation = () => {
                     <Interventions interventions={interventions} {...props} />)} exact />
 
                 <Route path="/components" render={(props) => (
-                    <Components components={components} {...props} />)} exact />
+                    <Components
+                        interventions={interventions}
+                        components={components} {...props} />)} exact />
 
                 <Route path="/subcomponents" render={(props) => (
-                    <Subcomponents subcomponents={subcomponents} {...props} />)} exact />
+                    <Subcomponents
+                        components={components}
+                        subcomponents={subcomponents} {...props} />)} exact />
 
                 <Route path="/activities" render={(props) => (
-                    <Activities activities={activities} {...props} />)} exact />
+                    <Activities
+                        subcomponents={subcomponents}
+                        activities={activities} {...props} />)} exact />
 
             </Switch>
         </Fragment>
