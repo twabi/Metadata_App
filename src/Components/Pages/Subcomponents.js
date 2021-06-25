@@ -14,7 +14,7 @@ import {
 } from "mdbreact";
 import NavBar from "../NavPages/NavBar";
 import {Button, Dialog, PlusIcon, SearchInput, TrashIcon} from "evergreen-ui";
-import {Card, Form, Input, Table} from "antd";
+import {Card, Form, Input, Select, Table} from "antd";
 import {getInstance} from "d2";
 
 const basicAuth = "Basic " + btoa("ahmed:Atwabi@20");
@@ -57,6 +57,7 @@ const columns = [
 const moment = require("moment");
 const SubComponents = (props) => {
     const [showModal, setShowModal] = useState(false);
+    const [components, setComponents] = useState(props.components);
     const [subcomponents, setSubcomponents] = useState(props.subcomponents);
     const [tableData, setTableData] = useState([]);
     const [dataArray, setDataArray] = useState([]);
@@ -64,6 +65,11 @@ const SubComponents = (props) => {
     const [showAlert, setShowAlert] = useState(false);
     const [message, setMessage] = useState("");
     const [showLoading, setShowLoading] = useState(false);
+    const [selectedComponent, setSelectedComponent] = useState(null);
+
+    const handleComponent = (value) => {
+        setSelectedComponent(value);
+    }
 
     const handleDelete = (id) => {
         fetch(`https://covmw.com/namistest/api/optionSets/h7xYkE4uHCD/options/${id}`, {
@@ -251,6 +257,25 @@ const SubComponents = (props) => {
                     <Form.Item label="Display Form Name">
                         <Input placeholder="Enter SubComponent form name" id="formName"/>
                     </Form.Item>
+
+                    <Form.Item label="Intervention">
+                        <Select placeholder="Select Intervention to Add to"
+                                showSearch
+                                optionFilterProp="children"
+                                filterOption={(input, option) =>
+                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                }
+                                filterSort={(optionA, optionB) =>
+                                    optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                                }
+                                onChange={handleComponent}>
+                            {components.map((item, index) => (
+                                <Select.Option key={index}  value={item.id}>{item.name}</Select.Option>
+                            ))}
+
+                        </Select>
+                    </Form.Item>
+
                 </Form>
 
                 {showAlert?

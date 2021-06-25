@@ -14,7 +14,7 @@ import {
 } from "mdbreact";
 import NavBar from "../NavPages/NavBar";
 import {Button, Dialog, PlusIcon, SearchInput, TrashIcon} from "evergreen-ui";
-import {Card, Form, Input, Table} from "antd";
+import {Card, Form, Input, Select, Table} from "antd";
 import {getInstance} from "d2";
 
 const basicAuth = "Basic " + btoa("ahmed:Atwabi@20");
@@ -56,6 +56,7 @@ const columns = [
 
 const moment = require("moment");
 const Activities = (props) => {
+    const [subcomponents, setSubcomponents] = useState(props.subcomponents);
     const [showModal, setShowModal] = useState(false);
     const [activities, setActivities] = useState(props.activities);
     const [tableData, setTableData] = useState([]);
@@ -64,6 +65,11 @@ const Activities = (props) => {
     const [showAlert, setShowAlert] = useState(false);
     const [message, setMessage] = useState("");
     const [showLoading, setShowLoading] = useState(false);
+    const [selectedSub, setSelectedSub] = useState(null);
+
+    const handleActivity = (value) => {
+        setSelectedSub(value);
+    }
 
     const handleDelete = (id) => {
         fetch(`https://covmw.com/namistest/api/optionSets/wjNZVBGZOOP/options/${id}`, {
@@ -250,6 +256,24 @@ const Activities = (props) => {
 
                     <Form.Item label="Display Form Name">
                         <Input placeholder="Enter Activity form name" id="formName"/>
+                    </Form.Item>
+
+                    <Form.Item label="Intervention">
+                        <Select placeholder="Select Intervention to Add to"
+                                showSearch
+                                optionFilterProp="children"
+                                filterOption={(input, option) =>
+                                    option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                }
+                                filterSort={(optionA, optionB) =>
+                                    optionA.children.toLowerCase().localeCompare(optionB.children.toLowerCase())
+                                }
+                                onChange={handleActivity}>
+                            {subcomponents.map((item, index) => (
+                                <Select.Option key={index}  value={item.id}>{item.name}</Select.Option>
+                            ))}
+
+                        </Select>
                     </Form.Item>
                 </Form>
 

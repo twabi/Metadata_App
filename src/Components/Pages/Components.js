@@ -56,10 +56,11 @@ const columns = [
 
 const moment = require("moment");
 const Components = (props) => {
-    const [showModal, setShowModal] = useState(false);
+
     const [components, setComponents] = useState(props.components);
     const [interventions, setInterventions] = useState(props.interventions);
     const [tableData, setTableData] = useState([]);
+    const [showModal, setShowModal] = useState(false);
     const [dataArray, setDataArray] = useState([]);
     const [color, setColor] = useState("info");
     const [showAlert, setShowAlert] = useState(false);
