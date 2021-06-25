@@ -3,14 +3,9 @@ import HeaderNav from "../NavPages/HeaderNav";
 import {
     MDBAlert,
     MDBBox,
-    MDBBtn,
     MDBCard,
     MDBCardBody,
     MDBCardHeader,
-    MDBCardText,
-    MDBCardTitle,
-    MDBContainer,
-    MDBRow
 } from "mdbreact";
 import NavBar from "../NavPages/NavBar";
 import {Button, Dialog, PlusIcon, SearchInput, TrashIcon} from "evergreen-ui";

@@ -6,7 +6,6 @@ import "mdbreact/dist/css/mdb.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "font-awesome/css/font-awesome.min.css";
 import "bootstrap-css-only/css/bootstrap.min.css";
-import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { init } from "d2";
 import {HashRouter} from "react-router-dom";
