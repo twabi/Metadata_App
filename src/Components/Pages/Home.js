@@ -35,9 +35,10 @@ const Home = () => {
                                         </MDBCardText>
                                     </MDBCardBody>
                                     <MDBCardFooter small muted>
-                                        <Button intent="info" appearance="primary" onClick={() => {
-                                            history.push('/interventions');
-                                        }}>
+                                        <Button
+                                            color={"white"}
+                                            backgroundColor={"#276696"}
+                                            onClick={() => {history.push('/interventions');}}>
                                             view
                                         </Button>
                                     </MDBCardFooter>
@@ -51,7 +52,9 @@ const Home = () => {
                                         </MDBCardText>
                                     </MDBCardBody>
                                     <MDBCardFooter small muted>
-                                        <Button intent="info" appearance="primary" onClick={() => {
+                                        <Button color={"white"}
+                                                backgroundColor={"#276696"}
+                                                onClick={() => {
                                             history.push('/components');
                                         }}>
                                             view
@@ -70,7 +73,9 @@ const Home = () => {
                                         </MDBCardText>
                                     </MDBCardBody>
                                     <MDBCardFooter small muted>
-                                        <Button intent="info" appearance="primary" onClick={() => {
+                                        <Button color={"white"}
+                                                backgroundColor={"#276696"}
+                                                onClick={() => {
                                             history.push('/subcomponents');
                                         }}>
                                             view
@@ -86,7 +91,9 @@ const Home = () => {
                                         </MDBCardText>
                                     </MDBCardBody>
                                     <MDBCardFooter small muted>
-                                        <Button intent="info" appearance="primary" onClick={() => {
+                                        <Button color={"white"}
+                                                backgroundColor={"#276696"}
+                                                onClick={() => {
                                             history.push('/activities');
                                         }}>
                                             view
