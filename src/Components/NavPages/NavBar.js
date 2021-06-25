@@ -13,19 +13,29 @@ const NavBar = () => {
 
             <MDBNav className="nav-tabs">
                 <MDBNavItem>
-                    <MDBNavLink active={(location.pathname === "/home") || location.pathname === "/"} to="/home">Home</MDBNavLink>
+                    <MDBNavLink active={(location.pathname === "/home") || location.pathname === "/"} to="/home">
+                        <strong>Home</strong>
+                    </MDBNavLink>
                 </MDBNavItem>
                 <MDBNavItem>
-                    <MDBNavLink active={location.pathname === "/interventions"} to="/interventions">Interventions</MDBNavLink>
+                    <MDBNavLink active={location.pathname === "/interventions"} to="/interventions">
+                        <strong>Interventions</strong>
+                    </MDBNavLink>
                 </MDBNavItem>
                 <MDBNavItem>
-                    <MDBNavLink active={location.pathname === "/components" } to="/components">Components</MDBNavLink>
+                    <MDBNavLink active={location.pathname === "/components" } to="/components">
+                        <strong>Components</strong>
+                    </MDBNavLink>
                 </MDBNavItem>
                 <MDBNavItem>
-                    <MDBNavLink active={location.pathname === "/subcomponents" } to="/subcomponents">Sub-Components</MDBNavLink>
+                    <MDBNavLink active={location.pathname === "/subcomponents" } to="/subcomponents">
+                        <strong>Sub-Components</strong>
+                    </MDBNavLink>
                 </MDBNavItem>
                 <MDBNavItem>
-                    <MDBNavLink active={location.pathname === "/activities" } to="/activities">Activities</MDBNavLink>
+                    <MDBNavLink active={location.pathname === "/activities" } to="/activities">
+                        <strong>Activities</strong>
+                    </MDBNavLink>
                 </MDBNavItem>
             </MDBNav>
 

@@ -26,7 +26,7 @@ const Navigation = () => {
             const comp = "optionSets/t16GxaaXdlX.json?fields=id,name,options[*]";
             const subComp = "optionSets/h7xYkE4uHCD.json?fields=id,name,options[*]";
 
-            d2.Api.getApi().get(testEndPoint)
+            d2.Api.getApi().get(inter)
                 .then((response) => {
                     console.log(response)
                     setInterventions(response.options);
