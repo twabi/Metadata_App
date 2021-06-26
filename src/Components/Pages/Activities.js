@@ -176,6 +176,7 @@ const Activities = (props) => {
                 name: name,
                 displayName: name,
                 displayFormName: formName,
+                subcomponent : selectedSub,
                 optionSet: {
                     id: "wjNZVBGZOOP"
                 }

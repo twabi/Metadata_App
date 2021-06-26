@@ -178,6 +178,7 @@ const Components = (props) => {
                 name: name,
                 displayName: name,
                 displayFormName: formName,
+                intervention : selectedIntervention,
                 optionSet: {
                     id: "t16GxaaXdlX"
                 }

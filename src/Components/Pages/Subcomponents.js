@@ -176,6 +176,7 @@ const SubComponents = (props) => {
                 name: name,
                 displayName: name,
                 displayFormName: formName,
+                component : selectedComponent,
                 optionSet: {
                     id: "h7xYkE4uHCD"
                 }
