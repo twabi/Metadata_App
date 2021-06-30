@@ -11,6 +11,7 @@ import NavBar from "../NavPages/NavBar";
 import {Button, Dialog, PlusIcon, SearchInput, TrashIcon} from "evergreen-ui";
 import {Card, Form, Input, Select, Table} from "antd";
 import {getInstance} from "d2";
+import Requests from "../Requests";
 
 const basicAuth = "Basic " + btoa("ahmed:Atwabi@20");
 //const basicAuth = "Basic " + btoa("admin:district");
@@ -63,6 +64,7 @@ const Components = (props) => {
     const [message, setMessage] = useState("");
     const [showLoading, setShowLoading] = useState(false);
     const [selectedIntervention, setSelectedIntervention] = useState(null);
+    const [attributes, setAttributes] = useState([]);
 
     const handleDelete = (id) => {
         fetch(`https://covmw.com/namistest/api/optionSets/t16GxaaXdlX/options/${id}`, {
@@ -125,6 +127,10 @@ const Components = (props) => {
         var obj = interventions[interventions.findIndex(x => (value) === x.id)];
         console.log(obj);
         setSelectedIntervention(obj);
+        Requests.getIntervention(obj.id).then((result) =>{
+            console.log(result);
+            setAttributes(result.attributeValues);
+        })
     }
 
     useEffect(() => {
@@ -169,6 +175,7 @@ const Components = (props) => {
 
     const handleCreate = () => {
 
+        var attributeArray = attributes;
         var name = document.getElementById("name").value;
         var formName = document.getElementById("code").value;
         var optionID = selectedIntervention.id;
@@ -183,7 +190,7 @@ const Components = (props) => {
         } else {
             setShowLoading(true);
 
-            var payload = {
+            var componentLoad = {
                 "code": formName,
                 "lastUpdated": moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
                 "created": moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
@@ -195,123 +202,81 @@ const Components = (props) => {
                 }
             }
 
-            console.log(payload);
-            fetch(`https://covmw.com/namistest/api/options`, {
-                method: 'POST',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Authorization' : basicAuth,
-                    'Content-type': 'application/json',
-                },
-                credentials: "include"
+            var attributeLoad = {
+                "valueType":"TEXT",
+                "name": name,
+                "shortName": name,
+                "code": name,
+                "description": name,
+                "optionAttribute":true
+            }
 
-            }).then(response => response.json())
-                .then(response => {
-                    console.log(response);
-                    var uid = response.response.uid;
-                    console.log(response.response.uid)
+            var compID = ""; var attID = "";
+            Requests.createComponent(componentLoad).then((result) => {
+                console.log(result);
+                compID = result.response.uid;
 
-                    if(response.httpStatus === "Created"){
+                Requests.createAttribute(attributeLoad).then((result) => {
+                    console.log(result)
+                    attID = result.response.uid;
 
-                        var schema = {
-                            "code": selectedIntervention.code,
-                            "lastUpdated":moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
-                            "id":selectedIntervention.id,
-                            "created": selectedIntervention.created,
-                            "attributeValues": [{
-                                "value": uid,
-                                "attribute":
-                                    {
-                                        "id":"cCDqqjGEUst",
-                                        "name":"Component"
-                                    },
-                            }],
-                            "sortOrder":1,
-                            "name":selectedIntervention.name,
-                            "optionSet":{
-                                "id":"VS9g1V2hcI4"
+                    var newAtt = {
+                        "value": compID,
+                        "attribute":
+                            {
+                                "id": attID,
+                                "name": name
                             },
-                            "translations":[]
-                        }
-
-                        fetch(`https://covmw.com/namistest/api/29/schemas/option`, {
-                            method: 'POST',
-                            body: JSON.stringify(schema),
-                            headers: {
-                                'Authorization' : basicAuth,
-                                'Content-type': 'application/json',
-                            },
-                            credentials: "include"
-
-                        }).then(res => res.json())
-                            .then((response) => {
-                                setShowLoading(false);
-
-                                var putReq = {
-                                    "code": selectedIntervention.code,
-                                    "lastUpdated":moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
-                                    "id": selectedIntervention.id,
-                                    "created": selectedIntervention.created,
-                                    "attributeValues": [{
-                                        "value": uid,
-                                        "attribute": {
-                                            "id":"cCDqqjGEUst",
-                                            "name":"Component"
-                                        }}],
-                                    "sortOrder":1,
-                                    "name": selectedIntervention.name,
-                                    "optionSet":{
-                                        "id":"VS9g1V2hcI4"
-                                    },
-                                    "translations":[]
-                                }
-
-                                console.log(response);
-                                fetch(`https://covmw.com/namistest/api/options/${selectedIntervention.id}?mergeMode=REPLACE`, {
-                                    method: 'PUT',
-                                    body: JSON.stringify(putReq),
-                                    headers: {
-                                        'Authorization' : basicAuth,
-                                        'Content-type': 'application/json',
-                                    },
-                                    credentials: "include"
-
-                                }).then(response => response.json())
-                                    .then((response) => {
-                                        setShowLoading(false);
-                                        console.log(response);
-                                    }).catch((error) => {
-                                    setShowLoading(false);
-                                    console.log(error);
-                                });
-
-                            }).catch((error) => {
-                            setShowLoading(false);
-                            console.log(error);
-                        });
-
-
-                        reLoad();
-                        setMessage("Created Component successfully");
-                        setColor("success");
-                        setShowAlert(true);
-                        setShowLoading(false);
-                        setTimeout(() => {
-                            setShowAlert(false);
-                            setShowModal(false);
-                        }, 2000);
-                    } else {
-                        setMessage("Unable to add Component. An error occurred ");
-                        setColor("danger");
-                        setShowLoading(false);
-                        setShowAlert(true);
-                        setTimeout(() => {
-                            setShowAlert(false);
-                        }, 2000);
                     }
+                    attributeArray.push(newAtt);
+                    console.log(attributeArray);
+
+                    var schemaLoad = {
+                        "code": selectedIntervention.code,
+                        "lastUpdated":moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                        "id":selectedIntervention.id,
+                        "created": selectedIntervention.created,
+                        "attributeValues": attributeArray,
+                        "sortOrder":1,
+                        "name":selectedIntervention.name,
+                        "optionSet":{
+                            "id":"VS9g1V2hcI4"
+                        },
+                        "translations":[]
+                    }
+
+                    var editLoad = {
+                        "code": selectedIntervention.code,
+                        "lastUpdated":moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                        "id": selectedIntervention.id,
+                        "created": selectedIntervention.created,
+                        "attributeValues": attributeArray,
+                        "sortOrder":1,
+                        "name": selectedIntervention.name,
+                        "optionSet":{
+                            "id":"VS9g1V2hcI4"
+                        },
+                        "translations":[]
+                    }
+
+
+                    Requests.createSchema(schemaLoad).then((result) => {
+                        Requests.updateIntervention(selectedIntervention.id, editLoad).then((result) => {
+                            reLoad();
+                            setMessage("Created Component successfully");
+                            setColor("success");
+                            setShowAlert(true);
+                            setShowLoading(false);
+                            setTimeout(() => {
+                                setShowAlert(false);
+                                setShowModal(false);
+                            }, 2000);
+                        })
+                    });
                 })
+            })
                 .catch((error) => {
-                    setMessage("Unable to add Component. An error occurred:  " + error.message);
+                    setMessage("Unable to add Component. An error occurred :  "+ error.message);
                     setColor("danger");
                     setShowLoading(false);
                     setShowAlert(true);
@@ -319,8 +284,6 @@ const Components = (props) => {
                         setShowAlert(false);
                     }, 2000);
                 });
-
-
 
         }
 
