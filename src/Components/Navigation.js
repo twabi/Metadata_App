@@ -21,7 +21,7 @@ const Navigation = () => {
         getInstance().then((d2) => {
             setD2(d2);
             const testEndPoint = "options.json?fields=[*]&paging=false";
-            const inter = "optionSets/EnA0L04iZyx.json?fields=id,name,options[*]";
+            const inter = "optionSets/VS9g1V2hcI4.json?fields=id,name,options[*]";
             const act = "optionSets/wjNZVBGZOOP.json?fields=id,name,options[*]";
             const comp = "optionSets/t16GxaaXdlX.json?fields=id,name,options[*]";
             const subComp = "optionSets/h7xYkE4uHCD.json?fields=id,name,options[*]";

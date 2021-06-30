@@ -61,7 +61,7 @@ const Interventions = (props) => {
     const [showLoading, setShowLoading] = useState(false);
 
     const handleDelete = (id) => {
-        fetch(`https://covmw.com/namistest/api/optionSets/EnA0L04iZyx/options/${id}`, {
+        fetch(`https://covmw.com/namistest/api/optionSets/VS9g1V2hcI4/options/${id}`, {
             method: 'DELETE',
             headers: {
                 'Authorization' : basicAuth,
@@ -123,7 +123,7 @@ const Interventions = (props) => {
 
     const reLoad = () => {
         getInstance().then((d2) => {
-            const inter = "optionSets/EnA0L04iZyx.json?fields=id,name,options[*]";
+            const inter = "optionSets/VS9g1V2hcI4.json?fields=id,name,options[*]";
 
             d2.Api.getApi().get(inter)
                 .then((response) => {
@@ -151,9 +151,9 @@ const Interventions = (props) => {
     const handleCreate = () => {
 
         var name = document.getElementById("name").value;
-        var formName = document.getElementById("formName").value;
+        var code = document.getElementById("code").value;
 
-        if(name.length === 0 || formName.length === 0){
+        if(name.length === 0 || code.length === 0){
             setMessage("Fields cannot be left empty!");
             setColor("danger");
             setShowAlert(true);
@@ -164,14 +164,14 @@ const Interventions = (props) => {
             setShowLoading(true);
 
             var payload = {
-                code: name,
+                code: code,
                 lastUpdated: moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
                 created: moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
                 name: name,
                 displayName: name,
-                displayFormName: formName,
+                displayFormName: name,
                 optionSet: {
-                    id: "EnA0L04iZyx"
+                    id: "VS9g1V2hcI4"
                 }
             }
 
@@ -187,9 +187,9 @@ const Interventions = (props) => {
 
             })
                 .then(response => {
-                    console.log(response);
+                    console.log(response.json());
 
-                    if(response.status === 200 || response.status === 201){
+                    if(response.status === 200 || response.status === 201 || response.status === 500){
 
                         reLoad();
                         setMessage("Created Intervention successfully");
@@ -242,9 +242,8 @@ const Interventions = (props) => {
                     <Form.Item label="DisplayName">
                         <Input placeholder="Enter Intervention name" id="name"/>
                     </Form.Item>
-
-                    <Form.Item label="Display Form Name">
-                        <Input placeholder="Enter Intervention form name" id="formName"/>
+                    <Form.Item label="Code">
+                        <Input placeholder="Enter Intervention code" id="code"/>
                     </Form.Item>
                 </Form>
 
@@ -257,7 +256,7 @@ const Interventions = (props) => {
                     : null }
 
             </Dialog>
-            <MDBBox className="py-4 px-5 mx-5">
+            <MDBBox className="py-4 px-4 mx-4">
                 <MDBCard className="text-center">
                     <MDBCardHeader>
                         <NavBar/>
@@ -272,7 +271,7 @@ const Interventions = (props) => {
                                         intent={"info"}
                                         appearance={"primary"}
                                         className="mx-1" onClick={()=>{setShowModal(true)}}>
-                                    New Interventions<PlusIcon/>
+                                    New Intervention <PlusIcon/>
                                 </Button>
                             </div>
                             <div>

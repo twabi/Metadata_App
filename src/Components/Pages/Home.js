@@ -17,7 +17,7 @@ const Home = () => {
             <div className="mb-5">
                 <HeaderNav />
             </div>
-            <MDBBox className="py-4 px-5 mx-5" >
+            <MDBBox className="py-4 px-4 mx-4" >
 
                     <MDBCard>
                         <MDBCardHeader>

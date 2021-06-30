@@ -13,6 +13,7 @@ import {Card, Form, Input, Select, Table} from "antd";
 import {getInstance} from "d2";
 
 const basicAuth = "Basic " + btoa("ahmed:Atwabi@20");
+//const basicAuth = "Basic " + btoa("admin:district");
 const columns = [
     {
         title: 'Key',
@@ -121,7 +122,9 @@ const Components = (props) => {
     }
 
     const handleIntervention = (value) => {
-        setSelectedIntervention(value);
+        var obj = interventions[interventions.findIndex(x => (value) === x.id)];
+        console.log(obj);
+        setSelectedIntervention(obj);
     }
 
     useEffect(() => {
@@ -131,15 +134,23 @@ const Components = (props) => {
 
     const reLoad = () => {
         getInstance().then((d2) => {
-            const inter = "optionSets/t16GxaaXdlX.json?fields=id,name,options[*]";
+            const comp = "optionSets/t16GxaaXdlX.json?fields=id,name,options[*]";
+            const inter = "optionSets/VS9g1V2hcI4.json?fields=id,name,options[*]";
 
-            d2.Api.getApi().get(inter)
+            d2.Api.getApi().get(comp)
                 .then((response) => {
-                    console.log(response)
                     setComponents([...response.options]);
                     setData([...response.options])
                 })
                 .catch((error) => {
+                    alert("An error occurred: " + error);
+                });
+            d2.Api.getApi().get(inter)
+                .then((response) => {
+                    setInterventions(response.options);
+                })
+                .catch((error) => {
+                    console.log(error);
                     alert("An error occurred: " + error);
                 });
         });
@@ -159,9 +170,10 @@ const Components = (props) => {
     const handleCreate = () => {
 
         var name = document.getElementById("name").value;
-        var formName = document.getElementById("formName").value;
+        var formName = document.getElementById("code").value;
+        var optionID = selectedIntervention.id;
 
-        if(name.length === 0 || formName.length === 0 || selectedIntervention == null){
+        if(false/*name.length === 0 || formName.length === 0 || selectedIntervention == null*/){
             setMessage("Fields cannot be left empty!");
             setColor("danger");
             setShowAlert(true);
@@ -172,15 +184,14 @@ const Components = (props) => {
             setShowLoading(true);
 
             var payload = {
-                code: name,
-                lastUpdated: moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
-                created: moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
-                name: name,
-                displayName: name,
-                displayFormName: formName,
-                intervention : selectedIntervention,
-                optionSet: {
-                    id: "t16GxaaXdlX"
+                "code": formName,
+                "lastUpdated": moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                "created": moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                "name": name,
+                "displayName": name,
+                "displayFormName": name,
+                "optionSet": {
+                    "id": "t16GxaaXdlX"
                 }
             }
 
@@ -194,11 +205,91 @@ const Components = (props) => {
                 },
                 credentials: "include"
 
-            })
+            }).then(response => response.json())
                 .then(response => {
                     console.log(response);
+                    var uid = response.response.uid;
+                    console.log(response.response.uid)
 
-                    if(response.status === 200 || response.status === 201){
+                    if(response.httpStatus === "Created"){
+
+                        var schema = {
+                            "code": selectedIntervention.code,
+                            "lastUpdated":moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                            "id":selectedIntervention.id,
+                            "created": selectedIntervention.created,
+                            "attributeValues": [{
+                                "value": uid,
+                                "attribute":
+                                    {
+                                        "id":"cCDqqjGEUst",
+                                        "name":"Component"
+                                    },
+                            }],
+                            "sortOrder":1,
+                            "name":selectedIntervention.name,
+                            "optionSet":{
+                                "id":"VS9g1V2hcI4"
+                            },
+                            "translations":[]
+                        }
+
+                        fetch(`https://covmw.com/namistest/api/29/schemas/option`, {
+                            method: 'POST',
+                            body: JSON.stringify(schema),
+                            headers: {
+                                'Authorization' : basicAuth,
+                                'Content-type': 'application/json',
+                            },
+                            credentials: "include"
+
+                        }).then(res => res.json())
+                            .then((response) => {
+                                setShowLoading(false);
+
+                                var putReq = {
+                                    "code": selectedIntervention.code,
+                                    "lastUpdated":moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                                    "id": selectedIntervention.id,
+                                    "created": selectedIntervention.created,
+                                    "attributeValues": [{
+                                        "value": uid,
+                                        "attribute": {
+                                            "id":"cCDqqjGEUst",
+                                            "name":"Component"
+                                        }}],
+                                    "sortOrder":1,
+                                    "name": selectedIntervention.name,
+                                    "optionSet":{
+                                        "id":"VS9g1V2hcI4"
+                                    },
+                                    "translations":[]
+                                }
+
+                                console.log(response);
+                                fetch(`https://covmw.com/namistest/api/options/${selectedIntervention.id}?mergeMode=REPLACE`, {
+                                    method: 'PUT',
+                                    body: JSON.stringify(putReq),
+                                    headers: {
+                                        'Authorization' : basicAuth,
+                                        'Content-type': 'application/json',
+                                    },
+                                    credentials: "include"
+
+                                }).then(response => response.json())
+                                    .then((response) => {
+                                        setShowLoading(false);
+                                        console.log(response);
+                                    }).catch((error) => {
+                                    setShowLoading(false);
+                                    console.log(error);
+                                });
+
+                            }).catch((error) => {
+                            setShowLoading(false);
+                            console.log(error);
+                        });
+
 
                         reLoad();
                         setMessage("Created Component successfully");
@@ -220,7 +311,7 @@ const Components = (props) => {
                     }
                 })
                 .catch((error) => {
-                    setMessage("Unable to add intervention. An error occured:  " + error);
+                    setMessage("Unable to add Component. An error occurred:  " + error.message);
                     setColor("danger");
                     setShowLoading(false);
                     setShowAlert(true);
@@ -228,6 +319,8 @@ const Components = (props) => {
                         setShowAlert(false);
                     }, 2000);
                 });
+
+
 
         }
 
@@ -252,8 +345,8 @@ const Components = (props) => {
                         <Input placeholder="Enter Component name" id="name"/>
                     </Form.Item>
 
-                    <Form.Item label="Display Form Name">
-                        <Input placeholder="Enter Component form name" id="formName"/>
+                    <Form.Item label="Code">
+                        <Input placeholder="Enter Component code" id="code"/>
                     </Form.Item>
 
                     <Form.Item label="Intervention">
@@ -284,7 +377,7 @@ const Components = (props) => {
                     : null }
 
             </Dialog>
-            <MDBBox className="py-4 px-5 mx-5">
+            <MDBBox className="py-4 px-4 mx-4">
                 <MDBCard className="text-center">
                     <MDBCardHeader>
                         <NavBar/>
