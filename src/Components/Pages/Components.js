@@ -216,7 +216,7 @@ const Components = (props) => {
             }
 
             var compID = ""; var attID = "";
-            Requests.createComponent(componentLoad).then((result) => {
+            Requests.createOption(componentLoad).then((result) => {
                 console.log(result);
                 compID = result.response.uid;
 

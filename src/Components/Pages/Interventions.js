@@ -61,9 +61,6 @@ const Interventions = (props) => {
     const [message, setMessage] = useState("");
     const [showLoading, setShowLoading] = useState(false);
 
-    const handleDelete = (id) => {
-
-    }
 
     const setData = (interArray) => {
         var tempArray = [];
@@ -168,30 +165,22 @@ const Interventions = (props) => {
             }
 
             console.log(payload);
-            fetch(`https://covmw.com/namistest/api/options`, {
-                method: 'POST',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Authorization' : basicAuth,
-                    'Content-type': 'application/json',
-                },
-                credentials: "include"
-
-            })
+            Requests.createOption(payload)
                 .then(response => {
-                    console.log(response.json());
+                    console.log(response);
 
-                    if(response.status === 200 || response.status === 201 || response.status === 500){
+                    reLoad();
+                    setMessage("Created Intervention successfully");
+                    setColor("success");
+                    setShowAlert(true);
+                    setShowLoading(false);
+                    setTimeout(() => {
+                        setShowAlert(false);
+                        setShowModal(false);
+                    }, 2000);
 
-                        reLoad();
-                        setMessage("Created Intervention successfully");
-                        setColor("success");
-                        setShowAlert(true);
-                        setShowLoading(false);
-                        setTimeout(() => {
-                            setShowAlert(false);
-                            setShowModal(false);
-                        }, 2000);
+                    /*/if(response.status === 200 || response.status === 201 || response.status === 500){
+
                     } else {
                         setMessage("Unable to add intervention. An error occurred ");
                         setColor("danger");
@@ -201,6 +190,8 @@ const Interventions = (props) => {
                             setShowAlert(false);
                         }, 2000);
                     }
+
+                       */
                 })
                 .catch((error) => {
                     setMessage("Unable to add intervention. An error occured:  " + error);

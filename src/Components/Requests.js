@@ -57,7 +57,7 @@ class Requests {
         }).then(response => response.json());
     }
 
-    createComponent = (payload) => {
+    createOption = (payload) => {
 
         return fetch(`https://covmw.com/namistest/api/options`, {
             method: 'POST',
