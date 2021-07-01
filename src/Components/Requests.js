@@ -71,6 +71,18 @@ class Requests {
         }).then(response => response.json());
     }
 
+    deleteOption = (optionID, optionSetID) => {
+        return fetch(`https://covmw.com/namistest/api/optionSets/${optionSetID}/options/${optionID}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization' : basicAuth,
+            },
+            credentials: "include"
+
+        })
+            .then(response => response.json())
+    }
+
 }
 
 export default new Requests();

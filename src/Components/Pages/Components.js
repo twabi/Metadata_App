@@ -13,8 +13,6 @@ import {Card, Form, Input, Select, Table} from "antd";
 import {getInstance} from "d2";
 import Requests from "../Requests";
 
-const basicAuth = "Basic " + btoa("ahmed:Atwabi@20");
-//const basicAuth = "Basic " + btoa("admin:district");
 const columns = [
     {
         title: 'Key',
@@ -67,16 +65,8 @@ const Components = (props) => {
     const [attributes, setAttributes] = useState([]);
 
     const handleDelete = (id) => {
-        fetch(`https://covmw.com/namistest/api/optionSets/t16GxaaXdlX/options/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization' : basicAuth,
-                //'Content-type': 'application/json',
-            },
-            credentials: "include"
-
-        })
-            .then(response => response.json())
+        var setID = "t16GxaaXdlX";
+        Requests.deleteOption(id, setID)
             .then((result) => {
                 reLoad();
                 alert("Option Successfully deleted")
@@ -175,12 +165,26 @@ const Components = (props) => {
 
     const handleCreate = () => {
 
+        //get the attributes already existing in the intervention
         var attributeArray = attributes;
-        var name = document.getElementById("name").value;
-        var formName = document.getElementById("code").value;
-        var optionID = selectedIntervention.id;
 
-        if(false/*name.length === 0 || formName.length === 0 || selectedIntervention == null*/){
+        //get the data from the textfields
+        var name = document.getElementById("name").value;
+        var code = document.getElementById("code").value;
+
+
+        //format the name about-to-be created component to include the initials and the date of the intervention
+        var prefix = String(selectedIntervention.name).substring(0, 2);
+        var create = selectedIntervention["created"].split("T")[0];
+        var date = moment(create, "YYYY-MM-DD");
+        var suffix = date.format("YYYY-MM");
+
+        //set the new name
+        name = prefix + "-" + name + "-" + suffix
+        console.log(name);
+
+        //put checks for if some fields are null
+        if(name.length === 0 || code.length === 0){
             setMessage("Fields cannot be left empty!");
             setColor("danger");
             setShowAlert(true);
@@ -191,7 +195,7 @@ const Components = (props) => {
             setShowLoading(true);
 
             var componentLoad = {
-                "code": formName,
+                "code": code,
                 "lastUpdated": moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
                 "created": moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
                 "name": name,

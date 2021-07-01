@@ -11,6 +11,7 @@ import NavBar from "../NavPages/NavBar";
 import {Button, Dialog, PlusIcon, SearchInput, TrashIcon} from "evergreen-ui";
 import {Card, Form, Input, Table} from "antd";
 import {getInstance} from "d2";
+import Requests from "../Requests";
 
 const basicAuth = "Basic " + btoa("ahmed:Atwabi@20");
 const columns = [
@@ -61,31 +62,7 @@ const Interventions = (props) => {
     const [showLoading, setShowLoading] = useState(false);
 
     const handleDelete = (id) => {
-        fetch(`https://covmw.com/namistest/api/optionSets/VS9g1V2hcI4/options/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization' : basicAuth,
-                //'Content-type': 'application/json',
-            },
-            credentials: "include"
 
-        })
-            .then(response => response.json())
-            .then((result) => {
-                reLoad();
-                alert("Option Successfully deleted")
-
-            })
-            .catch((error) => {
-                if(error.message === "Unexpected end of JSON input"){
-                    reLoad();
-                    alert("Option Successfully deleted")
-                } else {
-                    alert("Unable to delete Option : " + error.message);
-                }
-
-
-            });
     }
 
     const setData = (interArray) => {
@@ -101,7 +78,22 @@ const Interventions = (props) => {
                     <Button intent="danger" onClick={() => {
                         // eslint-disable-next-line no-restricted-globals
                         if (confirm("Are you sure you want to delete Intervention?")) {
-                            handleDelete(item.id)
+
+                            var setID = "VS9g1V2hcI4";
+                            Requests.deleteOption(item.id, setID)
+                                .then((result) => {
+                                    reLoad();
+                                    alert("Option Successfully deleted")
+
+                                })
+                                .catch((error) => {
+                                    if(error.message === "Unexpected end of JSON input"){
+                                        reLoad();
+                                        alert("Option Successfully deleted")
+                                    } else {
+                                        alert("Unable to delete Option : " + error.message);
+                                    }
+                                });
                         }
 
                     }}>
@@ -164,14 +156,14 @@ const Interventions = (props) => {
             setShowLoading(true);
 
             var payload = {
-                code: code,
-                lastUpdated: moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
-                created: moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
-                name: name,
-                displayName: name,
-                displayFormName: name,
-                optionSet: {
-                    id: "VS9g1V2hcI4"
+                "code": code,
+                "lastUpdated": moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                "created": moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                "name": name,
+                "displayName": name,
+                "displayFormName": name,
+                "optionSet": {
+                    "id": "VS9g1V2hcI4"
                 }
             }
 
