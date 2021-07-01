@@ -157,9 +157,9 @@ const Activities = (props) => {
     const handleCreate = () => {
 
         var name = document.getElementById("name").value;
-        var formName = document.getElementById("formName").value;
+        var code = document.getElementById("code").value;
 
-        if(name.length === 0 || formName.length === 0){
+        if(name.length === 0 || code.length === 0){
             setMessage("Fields cannot be left empty!");
             setColor("danger");
             setShowAlert(true);
@@ -170,12 +170,12 @@ const Activities = (props) => {
             setShowLoading(true);
 
             var payload = {
-                code: name,
+                code: code,
                 lastUpdated: moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
                 created: moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
                 name: name,
                 displayName: name,
-                displayFormName: formName,
+                displayFormName: name,
                 subcomponent : selectedSub,
                 optionSet: {
                     id: "wjNZVBGZOOP"
@@ -246,12 +246,12 @@ const Activities = (props) => {
                 shouldCloseOnOverlayClick={false}
             >
                 <Form layout={"vertical"}>
-                    <Form.Item label="DisplayName">
+                    <Form.Item label="Name">
                         <Input placeholder="Enter Activity name" id="name"/>
                     </Form.Item>
 
-                    <Form.Item label="Display Form Name">
-                        <Input placeholder="Enter Activity form name" id="formName"/>
+                    <Form.Item label="Code">
+                        <Input placeholder="Enter Activity code" id="code"/>
                     </Form.Item>
 
                     <Form.Item label="Sub-Component">

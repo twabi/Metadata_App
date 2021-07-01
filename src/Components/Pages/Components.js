@@ -115,9 +115,8 @@ const Components = (props) => {
 
     const handleIntervention = (value) => {
         var obj = interventions[interventions.findIndex(x => (value) === x.id)];
-        console.log(obj);
         setSelectedIntervention(obj);
-        Requests.getIntervention(obj.id).then((result) =>{
+        Requests.getOption(obj.id).then((result) =>{
             console.log(result);
             setAttributes(result.attributeValues);
         })
@@ -146,7 +145,6 @@ const Components = (props) => {
                     setInterventions(response.options);
                 })
                 .catch((error) => {
-                    console.log(error);
                     alert("An error occurred: " + error);
                 });
         });
@@ -181,7 +179,6 @@ const Components = (props) => {
 
         //set the new name
         name = prefix + "-" + name + "-" + suffix
-        console.log(name);
 
         //put checks for if some fields are null
         if(name.length === 0 || code.length === 0){
@@ -217,12 +214,13 @@ const Components = (props) => {
 
             var compID = ""; var attID = "";
             Requests.createOption(componentLoad).then((result) => {
-                console.log(result);
+
                 compID = result.response.uid;
+                console.log(compID);
 
                 Requests.createAttribute(attributeLoad).then((result) => {
-                    console.log(result)
                     attID = result.response.uid;
+                    console.log(attID);
 
                     var newAtt = {
                         "value": compID,
@@ -265,7 +263,7 @@ const Components = (props) => {
 
 
                     Requests.createSchema(schemaLoad).then((result) => {
-                        Requests.updateIntervention(selectedIntervention.id, editLoad).then((result) => {
+                        Requests.updateOption(selectedIntervention.id, editLoad).then((result) => {
                             reLoad();
                             setMessage("Created Component successfully");
                             setColor("success");
@@ -308,7 +306,7 @@ const Components = (props) => {
                 shouldCloseOnOverlayClick={false}
             >
                 <Form layout={"vertical"}>
-                    <Form.Item label="DisplayName">
+                    <Form.Item label="Name">
                         <Input placeholder="Enter Component name" id="name"/>
                     </Form.Item>
 

@@ -11,8 +11,8 @@ import NavBar from "../NavPages/NavBar";
 import {Button, Dialog, PlusIcon, SearchInput, TrashIcon} from "evergreen-ui";
 import {Card, Form, Input, Select, Table} from "antd";
 import {getInstance} from "d2";
+import Requests from "../Requests";
 
-const basicAuth = "Basic " + btoa("ahmed:Atwabi@20");
 const columns = [
     {
         title: 'Key',
@@ -61,37 +61,15 @@ const SubComponents = (props) => {
     const [message, setMessage] = useState("");
     const [showLoading, setShowLoading] = useState(false);
     const [selectedComponent, setSelectedComponent] = useState(null);
+    const [attributes, setAttributes] = useState([]);
+
 
     const handleComponent = (value) => {
-        setSelectedComponent(value);
-    }
-
-    const handleDelete = (id) => {
-        fetch(`https://covmw.com/namistest/api/optionSets/h7xYkE4uHCD/options/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization' : basicAuth,
-                //'Content-type': 'application/json',
-            },
-            credentials: "include"
-
+        var obj = components[components.findIndex(x => (value) === x.id)];
+        setSelectedComponent(obj);
+        Requests.getOption(obj.id).then((result) =>{
+            setAttributes(result.attributeValues);
         })
-            .then(response => response.json())
-            .then((result) => {
-                reLoad();
-                alert("Option Successfully deleted")
-
-            })
-            .catch((error) => {
-                if(error.message === "Unexpected end of JSON input"){
-                    reLoad();
-                    alert("Option Successfully deleted")
-                } else {
-                    alert("Unable to delete Option : " + error.message);
-                }
-
-
-            });
     }
 
     const setData = (interArray) => {
@@ -107,7 +85,23 @@ const SubComponents = (props) => {
                     <Button intent="danger" onClick={() => {
                         // eslint-disable-next-line no-restricted-globals
                         if (confirm("Are you sure you want to delete Interaction?")) {
-                            handleDelete(item.id)
+                            var setID = "h7xYkE4uHCD";
+                            Requests.deleteOption(item.id, setID)
+                                .then((result) => {
+                                    alert("Option Successfully deleted")
+                                    reLoad();
+
+                                })
+                                .catch((error) => {
+                                    if(error.message === "Unexpected end of JSON input"){
+                                        reLoad();
+                                        alert("Option Successfully deleted")
+                                    } else {
+                                        alert("Unable to delete Option : " + error.message);
+                                    }
+
+
+                                });
                         }
 
                     }}>
@@ -129,13 +123,20 @@ const SubComponents = (props) => {
 
     const reLoad = () => {
         getInstance().then((d2) => {
-            const inter = "optionSets/h7xYkE4uHCD.json?fields=id,name,options[*]";
+            const subComp = "optionSets/h7xYkE4uHCD.json?fields=id,name,options[*]";
+            const comp = "optionSets/t16GxaaXdlX.json?fields=id,name,options[*]";
 
-            d2.Api.getApi().get(inter)
+            d2.Api.getApi().get(subComp)
                 .then((response) => {
-                    console.log(response)
                     setSubcomponents([...response.options]);
                     setData([...response.options])
+                })
+                .catch((error) => {
+                    alert("An error occurred: " + error);
+                });
+            d2.Api.getApi().get(comp)
+                .then((response) => {
+                    setComponents([...response.options]);
                 })
                 .catch((error) => {
                     alert("An error occurred: " + error);
@@ -154,12 +155,14 @@ const SubComponents = (props) => {
         setTableData(filteredEvents);
     }
 
+
+
     const handleCreate = () => {
-
+        var attributeArray = attributes;
         var name = document.getElementById("name").value;
-        var formName = document.getElementById("formName").value;
+        var code = document.getElementById("code").value;
 
-        if(name.length === 0 || formName.length === 0){
+        if(name.length === 0 || code.length === 0){
             setMessage("Fields cannot be left empty!");
             setColor("danger");
             setShowAlert(true);
@@ -169,53 +172,103 @@ const SubComponents = (props) => {
         } else {
             setShowLoading(true);
 
-            var payload = {
-                code: name,
-                lastUpdated: moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
-                created: moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
-                name: name,
-                displayName: name,
-                displayFormName: formName,
-                component : selectedComponent,
-                optionSet: {
-                    id: "h7xYkE4uHCD"
+            var subcomponentLoad = {
+                "code": code,
+                "lastUpdated": moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                "created": moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                "name": name,
+                "displayName": name,
+                "displayFormName": name,
+                "component" : selectedComponent,
+                "optionSet": {
+                    "id": "h7xYkE4uHCD"
                 }
             }
 
-            console.log(payload);
-            fetch(`https://covmw.com/namistest/api/options`, {
-                method: 'POST',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Authorization' : basicAuth,
-                    'Content-type': 'application/json',
-                },
-                credentials: "include"
+            var attributeLoad = {
+                "valueType":"TEXT",
+                "name": name,
+                "shortName": name,
+                "code": name,
+                "description": name,
+                "optionAttribute":true
+            }
+            var compID = ""; var attID = "";
+            Requests.createOption(subcomponentLoad)
+                .then((response) => {
+                    compID = response.response.uid;
+                    Requests.createAttribute(attributeLoad).then((result) => {
+                        console.log(result)
+                        attID = result.response.uid;
 
-            })
-                .then(response => {
-                    console.log(response);
+                        var newAtt = {
+                            "value": compID,
+                            "attribute":
+                                {
+                                    "id": attID,
+                                    "name": name
+                                },
+                        }
+                        attributeArray.push(newAtt);
+                        console.log(attributeArray);
 
-                    if(response.status === 200 || response.status === 201){
+                        var schemaLoad = {
+                            "code": selectedComponent.code,
+                            "lastUpdated":moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                            "id":selectedComponent.id,
+                            "created": selectedComponent.created,
+                            "attributeValues": attributeArray,
+                            "sortOrder":1,
+                            "name":selectedComponent.name,
+                            "optionSet":{
+                                "id":"t16GxaaXdlX"
+                            },
+                            "translations":[]
+                        }
 
-                        reLoad();
-                        setMessage("Created SubComponent successfully");
-                        setColor("success");
-                        setShowAlert(true);
-                        setShowLoading(false);
-                        setTimeout(() => {
-                            setShowAlert(false);
-                            setShowModal(false);
-                        }, 2000);
-                    } else {
-                        setMessage("Unable to add SubComponent. An error occurred ");
-                        setColor("danger");
-                        setShowLoading(false);
-                        setShowAlert(true);
-                        setTimeout(() => {
-                            setShowAlert(false);
-                        }, 2000);
-                    }
+                        var editLoad = {
+                            "code": selectedComponent.code,
+                            "lastUpdated":moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                            "id": selectedComponent.id,
+                            "created": selectedComponent.created,
+                            "attributeValues": attributeArray,
+                            "sortOrder":1,
+                            "name": selectedComponent.name,
+                            "optionSet":{
+                                "id":"t16GxaaXdlX"
+                            },
+                            "translations":[]
+                        }
+
+
+                        Requests.createSchema(schemaLoad).then((result) => {
+                            console.log(result);
+                            Requests.updateOption(selectedComponent.id, editLoad).then((result) => {
+                                console.log(result);
+                                reLoad();
+                                setMessage("Created Component successfully");
+                                setColor("success");
+                                setShowAlert(true);
+                                setShowLoading(false);
+                                setTimeout(() => {
+                                    setShowAlert(false);
+                                    setShowModal(false);
+                                }, 2000);
+                            })
+                        });
+                    })
+
+
+                    reLoad();
+                    setMessage("Created SubComponent successfully");
+                    setColor("success");
+                    setShowAlert(true);
+                    setShowLoading(false);
+                    setTimeout(() => {
+                        setShowAlert(false);
+                        setShowModal(false);
+                    }, 2000);
+
                 })
                 .catch((error) => {
                     setMessage("Unable to add SubComponent. An error occured:  " + error);
@@ -246,12 +299,12 @@ const SubComponents = (props) => {
                 shouldCloseOnOverlayClick={false}
             >
                 <Form layout={"vertical"}>
-                    <Form.Item label="DisplayName">
+                    <Form.Item label="Name">
                         <Input placeholder="Enter SubComponent name" id="name"/>
                     </Form.Item>
 
-                    <Form.Item label="Display Form Name">
-                        <Input placeholder="Enter SubComponent form name" id="formName"/>
+                    <Form.Item label="Code">
+                        <Input placeholder="Enter SubComponent code" id="code"/>
                     </Form.Item>
 
                     <Form.Item label="Component">

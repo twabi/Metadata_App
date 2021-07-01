@@ -31,7 +31,7 @@ class Requests {
 
     }
 
-    updateIntervention = (id, payload) => {
+    updateOption = (id, payload) => {
         return fetch(`https://covmw.com/namistest/api/options/${id}`, {
             method: 'PUT',
             body: JSON.stringify(payload),
@@ -45,7 +45,7 @@ class Requests {
 
     }
 
-    getIntervention = (id) => {
+    getOption = (id) => {
         return fetch(`https://covmw.com/namistest/api/options/${id}`, {
             method: 'GET',
             headers: {
