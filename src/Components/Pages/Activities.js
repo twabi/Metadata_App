@@ -11,6 +11,7 @@ import NavBar from "../NavPages/NavBar";
 import {Button, Dialog, PlusIcon, SearchInput, TrashIcon} from "evergreen-ui";
 import {Card, Form, Input, Select, Table} from "antd";
 import {getInstance} from "d2";
+import Requests from "../Requests";
 
 const basicAuth = "Basic " + btoa("ahmed:Atwabi@20");
 const columns = [
@@ -61,37 +62,14 @@ const Activities = (props) => {
     const [message, setMessage] = useState("");
     const [showLoading, setShowLoading] = useState(false);
     const [selectedSub, setSelectedSub] = useState(null);
+    const [attributes, setAttributes] = useState([]);
 
     const handleActivity = (value) => {
-        setSelectedSub(value);
-    }
-
-    const handleDelete = (id) => {
-        fetch(`https://covmw.com/namistest/api/optionSets/wjNZVBGZOOP/options/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Authorization' : basicAuth,
-                //'Content-type': 'application/json',
-            },
-            credentials: "include"
-
+        var obj = subcomponents[subcomponents.findIndex(x => (value) === x.id)];
+        setSelectedSub(obj);
+        Requests.getOption(obj.id).then((result) =>{
+            setAttributes(result.attributeValues);
         })
-            .then(response => response.json())
-            .then((result) => {
-                reLoad();
-                alert("Option Successfully deleted")
-
-            })
-            .catch((error) => {
-                if(error.message === "Unexpected end of JSON input"){
-                    reLoad();
-                    alert("Option Successfully deleted")
-                } else {
-                    alert("Unable to delete Option : " + error.message);
-                }
-
-
-            });
     }
 
     const setData = (interArray) => {
@@ -107,7 +85,24 @@ const Activities = (props) => {
                     <Button intent="danger" onClick={() => {
                         // eslint-disable-next-line no-restricted-globals
                         if (confirm("Are you sure you want to delete Interaction?")) {
-                            handleDelete(item.id)
+                            var setID = "wjNZVBGZOOP";
+                            Requests.deleteOption(item.id, setID)
+                                .then((result) => {
+                                    reLoad();
+                                    console.log(result)
+                                    alert("Option Successfully deleted")
+
+                                })
+                                .catch((error) => {
+                                    if(error.message === "Unexpected end of JSON input"){
+                                        reLoad();
+                                        alert("Option Successfully deleted")
+                                    } else {
+                                        alert("Unable to delete Option : " + error.message);
+                                    }
+
+
+                                });
                         }
 
                     }}>
@@ -129,13 +124,22 @@ const Activities = (props) => {
 
     const reLoad = () => {
         getInstance().then((d2) => {
-            const inter = "optionSets/wjNZVBGZOOP.json?fields=id,name,options[*]";
+            const subComp = "optionSets/h7xYkE4uHCD.json?fields=id,name,options[*]";
+            const acti = "optionSets/wjNZVBGZOOP.json?fields=id,name,options[*]";
 
-            d2.Api.getApi().get(inter)
+            d2.Api.getApi().get(acti)
                 .then((response) => {
                     console.log(response)
                     setActivities([...response.options]);
                     setData([...response.options])
+                })
+                .catch((error) => {
+                    alert("An error occurred: " + error);
+                });
+
+            d2.Api.getApi().get(subComp)
+                .then((response) => {
+                    setSubcomponents([...response.options]);
                 })
                 .catch((error) => {
                     alert("An error occurred: " + error);
@@ -159,6 +163,15 @@ const Activities = (props) => {
         var name = document.getElementById("name").value;
         var code = document.getElementById("code").value;
 
+        var attributeArray = attributes;
+        //format the name about-to-be created component to include the initials and the date of the intervention
+        var prefix = String(selectedSub.name).substring(0, 2);
+        var date = moment(selectedSub["created"].split("T")[0], "YYYY-MM-DD");
+        var suffix = date.format("YYYY-MM");
+
+        //set the new name
+        name = prefix + "-" + name + "-" + suffix
+
         if(name.length === 0 || code.length === 0){
             setMessage("Fields cannot be left empty!");
             setColor("danger");
@@ -170,52 +183,95 @@ const Activities = (props) => {
             setShowLoading(true);
 
             var payload = {
-                code: code,
-                lastUpdated: moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
-                created: moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
-                name: name,
-                displayName: name,
-                displayFormName: name,
-                subcomponent : selectedSub,
-                optionSet: {
-                    id: "wjNZVBGZOOP"
+                "code": code,
+                "lastUpdated": moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                "created": moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                "name": name,
+                "displayName": name,
+                "displayFormName": name,
+                "optionSet": {
+                    "id": "wjNZVBGZOOP"
                 }
             }
 
-            console.log(payload);
-            fetch(`https://covmw.com/namistest/api/options`, {
-                method: 'POST',
-                body: JSON.stringify(payload),
-                headers: {
-                    'Authorization' : basicAuth,
-                    'Content-type': 'application/json',
-                },
-                credentials: "include"
+            var attributeLoad = {
+                "valueType":"TEXT",
+                "name": name,
+                "shortName": name,
+                "code": name,
+                "description": name,
+                "optionAttribute":true
+            }
 
-            })
+            console.log(payload);
+            var compID = ""; var attID = "";
+            Requests.createOption(payload)
                 .then(response => {
                     console.log(response);
+                    compID = response.response.uid;
 
-                    if(response.status === 200 || response.status === 201){
+                    Requests.createAttribute(attributeLoad).then((result) => {
+                        attID = result.response.uid;
+                        console.log(attID);
 
-                        reLoad();
-                        setMessage("Created Activity successfully");
-                        setColor("success");
-                        setShowAlert(true);
-                        setShowLoading(false);
-                        setTimeout(() => {
-                            setShowAlert(false);
-                            setShowModal(false);
-                        }, 2000);
-                    } else {
-                        setMessage("Unable to add Activity. An error occurred ");
-                        setColor("danger");
-                        setShowLoading(false);
-                        setShowAlert(true);
-                        setTimeout(() => {
-                            setShowAlert(false);
-                        }, 2000);
-                    }
+                        var newAtt = {
+                            "value": compID,
+                            "attribute":
+                                {
+                                    "id": attID,
+                                    "name": name
+                                },
+                        }
+                        attributeArray.push(newAtt);
+                        console.log(attributeArray);
+
+                        var schemaLoad = {
+                            "code": selectedSub.code,
+                            "lastUpdated":moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                            "id":selectedSub.id,
+                            "created": selectedSub.created,
+                            "attributeValues": attributeArray,
+                            "sortOrder":1,
+                            "name":selectedSub.name,
+                            "optionSet":{
+                                "id":"h7xYkE4uHCD"
+                            },
+                            "translations":[]
+                        }
+
+                        var editLoad = {
+                            "code": selectedSub.code,
+                            "lastUpdated":moment().format("YYYY-MM-DDTHH:mm:ss.SSS"),
+                            "id": selectedSub.id,
+                            "created": selectedSub.created,
+                            "attributeValues": attributeArray,
+                            "sortOrder":1,
+                            "name": selectedSub.name,
+                            "optionSet":{
+                                "id":"h7xYkE4uHCD"
+                            },
+                            "translations":[]
+                        }
+
+
+                        Requests.createSchema(schemaLoad).then((result) => {
+                            console.log(result)
+                            Requests.updateOption(selectedSub.id, editLoad).then((result) => {
+                                console.log(result)
+                                reLoad();
+                                setMessage("Created Activity successfully");
+                                setColor("success");
+                                setShowAlert(true);
+                                setShowLoading(false);
+                                setTimeout(() => {
+                                    setShowAlert(false);
+                                    setShowModal(false);
+                                }, 2000);
+                            })
+                        });
+                    })
+                    
+                    
                 })
                 .catch((error) => {
                     setMessage("Unable to add Activity. An error occured:  " + error);

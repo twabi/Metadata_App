@@ -162,6 +162,15 @@ const SubComponents = (props) => {
         var name = document.getElementById("name").value;
         var code = document.getElementById("code").value;
 
+        //format the name about-to-be created component to include the initials and the date of the intervention
+        var prefix = String(selectedComponent.name).substring(0, 2);
+        var create = selectedComponent["created"].split("T")[0];
+        var date = moment(create, "YYYY-MM-DD");
+        var suffix = date.format("YYYY-MM");
+
+        //set the new name
+        name = prefix + "-" + name + "-" + suffix
+
         if(name.length === 0 || code.length === 0){
             setMessage("Fields cannot be left empty!");
             setColor("danger");
@@ -179,7 +188,6 @@ const SubComponents = (props) => {
                 "name": name,
                 "displayName": name,
                 "displayFormName": name,
-                "component" : selectedComponent,
                 "optionSet": {
                     "id": "h7xYkE4uHCD"
                 }
@@ -246,7 +254,7 @@ const SubComponents = (props) => {
                             Requests.updateOption(selectedComponent.id, editLoad).then((result) => {
                                 console.log(result);
                                 reLoad();
-                                setMessage("Created Component successfully");
+                                setMessage("Created SubComponent successfully");
                                 setColor("success");
                                 setShowAlert(true);
                                 setShowLoading(false);
@@ -259,19 +267,9 @@ const SubComponents = (props) => {
                     })
 
 
-                    reLoad();
-                    setMessage("Created SubComponent successfully");
-                    setColor("success");
-                    setShowAlert(true);
-                    setShowLoading(false);
-                    setTimeout(() => {
-                        setShowAlert(false);
-                        setShowModal(false);
-                    }, 2000);
-
                 })
                 .catch((error) => {
-                    setMessage("Unable to add SubComponent. An error occured:  " + error);
+                    setMessage("Unable to add SubComponent. An error occurred:  " + error);
                     setColor("danger");
                     setShowLoading(false);
                     setShowAlert(true);
